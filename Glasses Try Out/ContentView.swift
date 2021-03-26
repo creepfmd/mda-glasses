@@ -17,6 +17,19 @@ struct ContentView : View {
 
 struct ARViewContainer: UIViewRepresentable {
     
+    func createBox() -> Entity {
+        let mesh = MeshResource.generateBox(size: 0.15)
+        let entity = ModelEntity(mesh: mesh)
+        return entity
+    }
+    
+    func createSphere(x: Float = 0, y: Float = 0, z: Float = 0) -> Entity {
+        let mesh = MeshResource.generateSphere(radius: 0.07)
+        let entity = ModelEntity(mesh: mesh)
+        entity.position = SIMD3(x, y, z)
+        return entity
+    }
+    
     func makeUIView(context: Context) -> ARView {
         
         let arView = ARView(frame: .zero)
@@ -30,6 +43,11 @@ struct ARViewContainer: UIViewRepresentable {
         configuration.isLightEstimationEnabled = true
         
         arView.session.run(configuration, options: [])
+        
+        // face anchor
+        let faceAnchor = AnchorEntity(.face)
+        faceAnchor.addChild(createSphere(y: 0.25))
+        arView.scene.anchors.append(faceAnchor)
         
         return arView
         
