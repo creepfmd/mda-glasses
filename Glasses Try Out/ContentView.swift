@@ -23,9 +23,25 @@ struct ARViewContainer: UIViewRepresentable {
         return entity
     }
     
-    func createSphere(x: Float = 0, y: Float = 0, z: Float = 0) -> Entity {
-        let mesh = MeshResource.generateSphere(radius: 0.07)
-        let entity = ModelEntity(mesh: mesh)
+    func createCircle(x: Float = 0, y: Float = 0, z: Float = 0) -> Entity {
+        let mesh = MeshResource.generateBox(size: 0.05, cornerRadius: 0.025)
+        
+        let material = SimpleMaterial(color: .blue, isMetallic: true)
+        
+        let entity = ModelEntity(mesh: mesh, materials: [material])
+        entity.position = SIMD3(x, y, z)
+        entity.scale.x = 1.1
+        entity.scale.z = 0.01
+        
+        return entity
+    }
+    
+    func createSphere(x: Float = 0, y: Float = 0, z: Float = 0, color: UIColor = .red, radius: Float = 0.05) -> Entity {
+        let mesh = MeshResource.generateSphere(radius: radius)
+        
+        let material = SimpleMaterial(color: color, isMetallic: true)
+        
+        let entity = ModelEntity(mesh: mesh, materials: [material])
         entity.position = SIMD3(x, y, z)
         return entity
     }
@@ -35,6 +51,7 @@ struct ARViewContainer: UIViewRepresentable {
         let arView = ARView(frame: .zero)
         
         guard ARFaceTrackingConfiguration.isSupported else {
+            print("Your device doesn't support face recognition")
             return arView
         }
         
@@ -46,7 +63,10 @@ struct ARViewContainer: UIViewRepresentable {
         
         // face anchor
         let faceAnchor = AnchorEntity(.face)
-        faceAnchor.addChild(createSphere(y: 0.25))
+        faceAnchor.addChild(createCircle(x: 0.035, y: 0.025, z: 0.06))
+        faceAnchor.addChild(createCircle(x: -0.035, y: 0.025, z: 0.06))
+        faceAnchor.addChild(createSphere(z: 0.06, radius: 0.025))
+        
         arView.scene.anchors.append(faceAnchor)
         
         return arView
